@@ -1,5 +1,16 @@
 # 🛒 Olist E-Commerce Data Analysis  
 
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Data Sources](#data-sources)
+- [Tools](#tools)
+- [Data Cleaning/Preparation](#data-cleaningpreparation)
+- [Exploratory Data Analysis](#exploratory-data-analysis)
+- [Data Analysis](#data-analysis)
+- [Final Results & Business Recommendations](#final-results--business-recommendations)
+- [Limitations](#limitations)
+
 ## Project Overview  
 This project explores the **Olist Brazilian E-Commerce dataset**, which contains information on customer orders, payments, products, sellers, and logistics. The goal of the analysis is to uncover insights into customer behavior, product performance, payment preferences, and delivery challenges in Brazil’s e-commerce market.  
 
@@ -46,7 +57,7 @@ To prepare the dataset for analysis, the following steps were applied:
 
 These cleaning steps ensured consistent formats, reduced errors, and prepared the dataset for meaningful exploratory data analysis (EDA).  
 
-## Exporatory Data Analysis(EDA)
+## Exploratory Data Analysis
 
 The EDA involved exploring the dataset to answer key business and operational questions, such as:
 
@@ -58,6 +69,80 @@ The EDA involved exploring the dataset to answer key business and operational qu
 
 ## Data Analysis
 
+### Example: Delivery Time vs Customer Review Scores  
 
+One key analysis was to explore how delivery performance impacts customer satisfaction.  
+The code below visualizes delivery times against review scores, both with and without extreme outliers (>75 days):  
+
+```python
+relationship_delivery_review = orders_customer_delivery.merge(
+    reviews, on='order_id', how='left'
+)[['order_id', 'delivery_days', 'review_score']]
+
+fig, axs = plt.subplots(2, figsize=(12, 12))
+
+sns.boxplot(relationship_delivery_review, x='review_score', y='delivery_days', color='skyblue', ax=axs[0])
+sns.boxplot(relationship_delivery_review[relationship_delivery_review['delivery_days'] < 75], 
+            x='review_score', y='delivery_days', color='skyblue', ax=axs[1])
+
+for ax in axs:
+    ax.grid(axis='y', linestyle='--', alpha=0.5)
+
+axs[0].set_title("Delivery Time by Review Score (Full)", fontsize=14, weight='bold')
+axs[0].set_xlabel("Review Score", fontsize=12)
+axs[0].set_ylabel("Delivery Days", fontsize=12)
+
+axs[1].set_title("Delivery Time by Review Score (<75)", fontsize=14, weight='bold')
+axs[1].set_xlabel("Review Score", fontsize=12)
+axs[1].set_ylabel("Delivery Days", fontsize=12)
+
+plt.tight_layout()
+```
+<img width="1189" height="1189" alt="image" src="https://github.com/user-attachments/assets/740b33b8-3b28-4c1f-91be-f382275d5c85" />
+
+### Result
+
+This analysis showed that longer delivery times are generally associated with lower review scores, confirming the impact of logistics on customer satisfaction.
+
+## Final Results & Business Recommendations  
+
+The analysis of the Olist dataset highlights key patterns in customer behavior, product performance, logistics, and payment preferences that can inform strategic business decisions.  
+
+### 1. Customer Behavior & Sales Trends  
+- Online shopping in Brazil is growing steadily, with Mondays being the most popular day for purchases.  
+- Seasonal peaks indicate opportunities to align promotions with high-demand months.  
+**Recommendation:** Plan marketing campaigns around seasonal peaks and optimize promotions for the start of the week when engagement is highest.  
+
+### 2. Product Strategy  
+- `bed_bath_table` and `health_beauty` dominate in sales volume and revenue but show relatively low average order values.  
+- Niche categories like `computers` generate fewer sales but achieve higher value per purchase.  
+**Recommendation:** Maintain strong presence in high-volume categories while exploring strategies to boost order value (bundling, premium products). Invest in high-value niches with tailored marketing.  
+
+### 3. Logistics & Delivery Performance  
+- Typical delivery time is 6–15 days, but customers in Northern Brazil wait up to 2–3x longer than those in Southeastern regions.  
+- Longer delivery times are strongly linked to lower customer review scores.  
+**Recommendation:** Strengthen logistics in Northern regions through partnerships with local carriers, better route planning, and alternative transport methods. Communicate realistic delivery expectations to maintain trust.  
+
+### 4. Payments & Customer Experience  
+- Credit cards account for 77% of payments, with nearly half of customers opting for installments (avg. 2.85).  
+- Higher installment options are associated with higher order values.  
+**Recommendation:** Continue supporting diverse installment options to encourage higher spending. Offer incentives for customers to use installments responsibly.  
+
+### 5. Marketplace Dynamics & Regional Focus  
+- São Paulo dominates the market (42% of customers, 60% of sellers), but buyers are more geographically dispersed.  
+**Recommendation:** While SP remains the core market, expanding seller presence in other states can reduce delivery delays and improve customer satisfaction.  
+
+---
+
+**Overall Business Insight:**  
+Brazilian e-commerce is growing rapidly but remains geographically uneven. Companies that combine efficient logistics, flexible payment options, and region-specific marketing can capture both the dense urban hubs (SP, RJ, MG) and unlock new opportunities in the logistically challenging Northern regions. To achieve sustainable growth, sellers and marketplaces should prioritize logistics optimization, financial accessibility, and product diversification—strengthening their presence in established markets while expanding into underserved areas.
+
+## Limitations  
+
+Some records have missing or inconsistent values. For example:  
+  - Several orders have no `order_delivered_customer_date`, which usually corresponds to canceled or undelivered orders.  
+  - A small portion of records show **0 delivery days** (likely data entry errors or same-day deliveries).  
+  - Other records report **very high delivery times (40+ days)**, which are extreme outliers compared to the majority (6–15 days).  
+These anomalies required cleaning and filtering, but they still introduce uncertainty and may slightly distort averages or trends.  
 
 
